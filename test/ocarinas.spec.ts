@@ -8,7 +8,7 @@ import { Ocarinas } from "../typechain-types";
 chai.use(solidity);
 const { expect } = chai;
 
-describe("ChocoMintSellableWrapper", function () {
+describe("Ocarinas", function () {
   let validSigner: SignerWithAddress;
   let paymentReciever: SignerWithAddress;
   let ocarinasContract: any;
