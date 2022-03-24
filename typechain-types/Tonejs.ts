@@ -21,26 +21,35 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 export interface TonejsInterface extends utils.Interface {
   contractName: "Tonejs";
   functions: {
+    "animationUrlBase()": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
+    "imageUrlBase()": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "mint(address)": FunctionFragment;
+    "mint(address,address,uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
+    "seedAddresses(uint256)": FunctionFragment;
+    "seedTokenIds(uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
+    "setTonejsTx(bytes)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
     "tokenURI(uint256)": FunctionFragment;
+    "tonejsTxhash()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "usedSupply()": FunctionFragment;
-    "withdraw(address,uint256)": FunctionFragment;
+    "withdraw()": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "animationUrlBase",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "approve",
     values: [string, BigNumberish]
@@ -51,10 +60,17 @@ export interface TonejsInterface extends utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "imageUrlBase",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [string, string]
   ): string;
-  encodeFunctionData(functionFragment: "mint", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "mint",
+    values: [string, string, BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -70,8 +86,20 @@ export interface TonejsInterface extends utils.Interface {
     values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "seedAddresses",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "seedTokenIds",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setApprovalForAll",
     values: [string, boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setTonejsTx",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
@@ -83,6 +111,10 @@ export interface TonejsInterface extends utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "tonejsTxhash",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "transferFrom",
     values: [string, string, BigNumberish]
   ): string;
@@ -90,19 +122,20 @@ export interface TonejsInterface extends utils.Interface {
     functionFragment: "transferOwnership",
     values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "usedSupply",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "withdraw",
-    values: [string, BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "animationUrlBase",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "imageUrlBase",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -122,7 +155,19 @@ export interface TonejsInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "seedAddresses",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "seedTokenIds",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setApprovalForAll",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setTonejsTx",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -132,6 +177,10 @@ export interface TonejsInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "tonejsTxhash",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "transferFrom",
     data: BytesLike
   ): Result;
@@ -139,7 +188,6 @@ export interface TonejsInterface extends utils.Interface {
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "usedSupply", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 
   events: {
@@ -212,6 +260,8 @@ export interface Tonejs extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    animationUrlBase(overrides?: CallOverrides): Promise<[string]>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -225,6 +275,8 @@ export interface Tonejs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    imageUrlBase(overrides?: CallOverrides): Promise<[string]>;
+
     isApprovedForAll(
       owner: string,
       operator: string,
@@ -233,6 +285,8 @@ export interface Tonejs extends BaseContract {
 
     mint(
       to: string,
+      seedAddress: string,
+      seedTokenId: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -264,9 +318,24 @@ export interface Tonejs extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    seedAddresses(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    seedTokenIds(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     setApprovalForAll(
       operator: string,
       approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setTonejsTx(
+      _tonejsTxhash: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -282,6 +351,8 @@ export interface Tonejs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    tonejsTxhash(overrides?: CallOverrides): Promise<[string]>;
+
     transferFrom(
       from: string,
       to: string,
@@ -294,14 +365,12 @@ export interface Tonejs extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    usedSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     withdraw(
-      to: string,
-      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
+
+  animationUrlBase(overrides?: CallOverrides): Promise<string>;
 
   approve(
     to: string,
@@ -316,6 +385,8 @@ export interface Tonejs extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  imageUrlBase(overrides?: CallOverrides): Promise<string>;
+
   isApprovedForAll(
     owner: string,
     operator: string,
@@ -324,6 +395,8 @@ export interface Tonejs extends BaseContract {
 
   mint(
     to: string,
+    seedAddress: string,
+    seedTokenId: BigNumberish,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -352,9 +425,21 @@ export interface Tonejs extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  seedAddresses(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+  seedTokenIds(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   setApprovalForAll(
     operator: string,
     approved: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setTonejsTx(
+    _tonejsTxhash: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -366,6 +451,8 @@ export interface Tonejs extends BaseContract {
   symbol(overrides?: CallOverrides): Promise<string>;
 
   tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+  tonejsTxhash(overrides?: CallOverrides): Promise<string>;
 
   transferFrom(
     from: string,
@@ -379,15 +466,13 @@ export interface Tonejs extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  usedSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
   withdraw(
-    to: string,
-    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    animationUrlBase(overrides?: CallOverrides): Promise<string>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -401,13 +486,20 @@ export interface Tonejs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    imageUrlBase(overrides?: CallOverrides): Promise<string>;
+
     isApprovedForAll(
       owner: string,
       operator: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    mint(to: string, overrides?: CallOverrides): Promise<void>;
+    mint(
+      to: string,
+      seedAddress: string,
+      seedTokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -432,9 +524,24 @@ export interface Tonejs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    seedAddresses(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    seedTokenIds(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     setApprovalForAll(
       operator: string,
       approved: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setTonejsTx(
+      _tonejsTxhash: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -446,6 +553,8 @@ export interface Tonejs extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<string>;
 
     tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+    tonejsTxhash(overrides?: CallOverrides): Promise<string>;
 
     transferFrom(
       from: string,
@@ -459,13 +568,7 @@ export interface Tonejs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    usedSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    withdraw(
-      to: string,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    withdraw(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
@@ -513,6 +616,8 @@ export interface Tonejs extends BaseContract {
   };
 
   estimateGas: {
+    animationUrlBase(overrides?: CallOverrides): Promise<BigNumber>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -526,6 +631,8 @@ export interface Tonejs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    imageUrlBase(overrides?: CallOverrides): Promise<BigNumber>;
+
     isApprovedForAll(
       owner: string,
       operator: string,
@@ -534,6 +641,8 @@ export interface Tonejs extends BaseContract {
 
     mint(
       to: string,
+      seedAddress: string,
+      seedTokenId: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -565,9 +674,24 @@ export interface Tonejs extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    seedAddresses(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    seedTokenIds(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     setApprovalForAll(
       operator: string,
       approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setTonejsTx(
+      _tonejsTxhash: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -583,6 +707,8 @@ export interface Tonejs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    tonejsTxhash(overrides?: CallOverrides): Promise<BigNumber>;
+
     transferFrom(
       from: string,
       to: string,
@@ -595,16 +721,14 @@ export interface Tonejs extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    usedSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
     withdraw(
-      to: string,
-      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    animationUrlBase(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -621,6 +745,8 @@ export interface Tonejs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    imageUrlBase(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     isApprovedForAll(
       owner: string,
       operator: string,
@@ -629,6 +755,8 @@ export interface Tonejs extends BaseContract {
 
     mint(
       to: string,
+      seedAddress: string,
+      seedTokenId: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -660,9 +788,24 @@ export interface Tonejs extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    seedAddresses(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    seedTokenIds(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     setApprovalForAll(
       operator: string,
       approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setTonejsTx(
+      _tonejsTxhash: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -678,6 +821,8 @@ export interface Tonejs extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    tonejsTxhash(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     transferFrom(
       from: string,
       to: string,
@@ -690,11 +835,7 @@ export interface Tonejs extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    usedSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     withdraw(
-      to: string,
-      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

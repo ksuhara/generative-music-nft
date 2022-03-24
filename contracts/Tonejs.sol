@@ -9,88 +9,64 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
-import "hardhat/console.sol";
-
 contract Tonejs is ERC721, Ownable {
-    using Counters for Counters.Counter;
-    using Strings for uint256;
-    using Address for address payable;
+  using Counters for Counters.Counter;
+  using Strings for uint256;
+  using Address for address payable;
 
-    Counters.Counter private _tokenIdTracker;
+  Counters.Counter private _tokenIdTracker;
 
-    // CONSTRUCTOR ---------------------------------------------------
+  mapping(uint256 => address) public seedAddresses;
+  mapping(uint256 => uint256) public seedTokenIds;
 
-    constructor(
-    ) ERC721("Tonejs", "TONE") {
-    }
-    
+  string public imageUrlBase;
+  string public animationUrlBase;
+  bytes public tonejsTxhash;
 
-    function withdraw(address payable to, uint256 amount) public onlyOwner {
-        require(
-            address(this).balance >= amount,
-            "Ocarinas: Insufficient balance to withdraw"
-        );
-        if (amount == 0) {
-            amount = address(this).balance;
-        }
-        if (to == address(0)) {
-            to = payable(owner());
-        }
-        to.sendValue(amount);
-    }
+  constructor(string memory _imageUrlBase, string memory _animationUrlBase) ERC721("Tonejs", "TONE") {
+    imageUrlBase = _imageUrlBase;
+    animationUrlBase = _animationUrlBase;
+  }
 
+  function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+    require(_exists(tokenId), "Tonejs: nonexistent token");
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        virtual
-        override
-        returns (string memory)
-    {
-        require(_exists(tokenId), "Tonejs: nonexistent token");
+    //TODO: set music logic
+    string
+      memory html = '<!DOCTYPE html><html lang="en"><head></head><body><script>console.log("a");</script><h1>Test</h1></body></html>';
 
-        string memory html = Base64.encode(abi.encodePacked('<!doctype html><html lang="ja"><head><meta charset="UTF-8"><title>HTML Sample</title><script type="text/javascript" src="https://unpkg.com/tone@14.8.9/build/Tone.js"></script><script>window.addEventListener("load", ()=>{const button = document.querySelector("button"); button.onclick = async ()=>{  await Tone.start();  play(); };}); function play() {const synth = new Tone.Synth().toDestination();  synth.triggerAttackRelease("C4", "8n");}</script></head><body><div class="header">Header</div><div class="main"><button>play</button><h1>h1</h1><p>content</p></div><div class="footer"><span>Footer</span><a href="#">link</a></div></body></html>'));
+    address seedAddress = seedAddresses[tokenId];
 
-        bytes memory json = abi.encodePacked(
-            '{"name": "Ocarina #',
-            tokenId.toString(),
-            '", "description": "A unique piece of music represented entirely on-chain in the MIDI format with inspiration from the musical themes and motifs of video games.", "image": "',
-            ""
-            '", "animation_url": "','data:text/html;base64,',html,
-    '"}');
-        return
-            string(
-                abi.encodePacked(
-                    "data:application/json;base64,",
-                    Base64.encode(json)
-                )
-            );
-    }
+    bytes memory json = abi.encodePacked(
+      '{"name": "Tonejs #',
+      tokenId.toString(),
+      '", "description": "A unique piece of music represented entirely on-chain.",', 
+      '"image": "',imageUrlBase, '?seedAddress=',seedAddress,"&seedTokenId=",seedTokenIds[tokenId].toString(),'"',
+      ',"animation_url": "',animationUrlBase, '?seedAddress=',seedAddress,"&seedTokenId=",seedTokenIds[tokenId].toString(),'"',
+      ',"audio":"data:text/html ',html,
+      '"}'
+    );
+    return string(abi.encodePacked("data:application/json;base64,", Base64.encode(json)));
+  }
 
-    
+  function mint(
+    address to,
+    address seedAddress,
+    uint256 seedTokenId
+  ) external payable virtual {
+    uint256 tokenId = _tokenIdTracker.current();
 
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual override {
-        super._beforeTokenTransfer(from, to, tokenId);
-    }
+    seedAddresses[tokenId]=seedAddress;
+    seedTokenIds[tokenId]=seedTokenId;
+    _mint(to, tokenId);
+    _tokenIdTracker.increment();
+  }
 
+  function setTonejsTx(bytes memory _tonejsTxhash) public onlyOwner {
+    tonejsTxhash = _tonejsTxhash;
+  }
 
-    function mint(
-        address to
-    ) external payable virtual {
-        uint256 tokenID = _tokenIdTracker.current();
-
-        _mint(to, tokenID);
-        _tokenIdTracker.increment();
-        
-    }  
-
-    // EXTRA FUNCTIONS ---------------------------------------------------
-
-    function usedSupply() external view returns (uint256) {
-        return _tokenIdTracker.current();
-    }
+  function withdraw() public onlyOwner {
+    payable(msg.sender).transfer(address(this).balance);
+  }
 }

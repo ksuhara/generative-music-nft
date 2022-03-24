@@ -14,11 +14,15 @@ describe.only("tonejs", function () {
   beforeEach(async function () {
     [validSigner, paymentReciever] = await ethers.getSigners();
     const TonejsContract = await ethers.getContractFactory("Tonejs");
-    toneJsContract = await TonejsContract.deploy();
+    toneJsContract = await TonejsContract.deploy("ipfs://QmXXXX", "ipfs://QmYYYY");
   });
 
   it("setApprovalForAll", async function () {
-    await toneJsContract.mint("0x12d036ad270cdd009fA15f82e199Fc685eC6cd9a");
+    await toneJsContract.mint(
+      "0x12d036ad270cdd009fA15f82e199Fc685eC6cd9a",
+      "0x12d036ad270cdd009fA15f82e199Fc685eC6cd9a",
+      1
+    );
     const meta = await toneJsContract.tokenURI(0);
     console.log(meta);
   });
